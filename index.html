@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Для тебя ❤️</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <style>
+        body {
+            background: #1a1a1a;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        #snow-canvas {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .lights {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            padding: 0;
+            margin: 0;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .light {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: glow 1.5s infinite alternate;
+        }
+
+        @keyframes glow {
+            0% { opacity: 0.3; transform: scale(0.8); box-shadow: 0 0 2px currentColor; }
+            100% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 15px currentColor; }
+        }
+
+        .light:nth-child(4n+1) { color: #ff0000; background: #ff0000; animation-delay: 0s; }
+        .light:nth-child(4n+2) { color: #00ff00; background: #00ff00; animation-delay: 0.4s; }
+        .light:nth-child(4n+3) { color: #0000ff; background: #0000ff; animation-delay: 0.8s; }
+        .light:nth-child(4n+4) { color: #ffff00; background: #ffff00; animation-delay: 1.2s; }
+
+        .bg-decor {
+            position: fixed;
+            font-size: 40px;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.6;
+            user-select: none;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 40px;
+            width: 90%;
+            max-width: 500px;
+            z-index: 10;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            position: relative;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .card::-webkit-scrollbar { width: 6px; }
+        .card::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+
+        .decor-item {
+            position: absolute;
+            font-size: 30px;
+            pointer-events: none;
+            z-index: 11;
+        }
+        .hat { top: -25px; left: -10px; transform: rotate(-20deg); font-size: 50px; }
+        .cane { bottom: 10px; right: -20px; transform: rotate(15deg); }
+        .deer { top: 10px; right: -25px; transform: scaleX(-1) rotate(10deg); }
+        .snowman-card { bottom: -20px; left: -15px; }
+
+        h2 { color: #ff9a9e; font-weight: 300; margin-bottom: 30px; }
+        
+        input {
+            width: 80%;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #444;
+            background: rgba(0,0,0,0.5);
+            color: #fff;
+            font-size: 18px;
+            margin-bottom: 20px;
+            outline: none;
+        }
+
+        button {
+            background: #ff9a9e;
+            color: #1a1a1a;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover { transform: scale(1.05); background: #feb4b7; }
+
+        #output {
+            display: none;
+            text-align: left;
+            animation: fadeIn 1.5s ease;
+        }
+
+        .letter-text {
+            white-space: pre-wrap;
+            line-height: 1.6;
+            font-size: 16px;
+            color: #ffe4e5;
+            margin-bottom: 30px;
+        }
+
+        .img-container {
+            width: 100%;
+            margin-top: 20px;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .img-container img { width: 100%; display: block; }
+        .img-caption {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            font-size: 14px;
+            text-align: center;
+            color: #ff9a9e;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+<div class="lights">
+    <div class="light"></div><div class="light"></div><div class="light"></div><div class="light"></div><div class="light"></div>
+    <div class="light"></div><div class="light"></div><div class="light"></div><div class="light"></div><div class="light"></div>
+    <div class="light"></div><div class="light"></div><div class="light"></div><div class="light"></div><div class="light"></div>
+</div>
+
+<div class="bg-decor" style="top: 10%; left: 5%;">☃️</div>
+<div class="bg-decor" style="top: 15%; right: 10%;">🎄</div>
+<div class="bg-decor" style="bottom: 10%; left: 8%;">🦌</div>
+<div class="bg-decor" style="bottom: 15%; right: 5%;">🎁</div>
+<div class="bg-decor" style="top: 50%; left: 2%;">🍭</div>
+<div class="bg-decor" style="top: 40%; right: 3%;">❄️</div>
+
+<canvas id="snow-canvas"></canvas>
+
+<div class="card" id="mainCard">
+    <!-- <div class="decor-item hat">🎅</div> -->
+    <!-- <div class="decor-item deer">🦌</div> -->
+    <!-- <div class="decor-item cane">🍭</div> -->
+    <!-- <div class="decor-item snowman-card">☃️</div> -->
+
+    <div id="login-section">
+        <h2>Нажмякай лапками пароль</h2>
+        <input type="password" id="passInput" placeholder="бебебе...">
+        <br>
+        <button onclick="unlock()">Попробовать 👉👈</button>
+    </div>
+
+    <div id="output">
+        <div class="letter-text" id="textBlock"></div>
+        
+        <div class="img-container">
+            <img id="pic1" src="">
+            <div class="img-caption">это мы ❤️</div>
+        </div>
+
+        <div class="img-container">
+            <img id="pic2" src="">
+        </div>
+
+        <div class="img-container">
+            <img id="pic3" src="">
+            <div class="img-caption">Хвхвх ты тут на лисичку похожа 😜</div>
+        </div>
+        
+        <p style="text-align:center; color: #777; font-size: 12px; margin-top: 30px;">~ 2025-2026 ~</p>
+    </div>
+</div>
+
+<script>
+    const encryptedData = "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";
+    
+    let counter = 0;
+
+    function unlock() {
+        const key = document.getElementById('passInput').value;
+        try {
+            const bytes = CryptoJS.AES.decrypt(encryptedData, key);
+            const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
+
+            if (decryptedData) {
+                console.log("%cThe file is verified with the digital signature of the author", "color: #ff9a9e; font-weight: bold;");
+                const data = JSON.parse(decryptedData);
+                document.getElementById('login-section').style.display = 'none';
+                document.getElementById('textBlock').innerText = data.text;
+                document.getElementById('pic1').src = data.img1;
+                document.getElementById('pic2').src = data.img2;
+                document.getElementById('pic3').src = data.img3;
+                document.getElementById('output').style.display = 'block';
+                document.getElementById('mainCard').style.maxWidth = '600px';
+                document.querySelectorAll('.decor-item').forEach(el => el.style.display = 'none');
+            } else {
+                throw new Error();
+            }
+        } catch (e) {
+            counter++;
+            if (counter < 3) {
+                alert("Неверный пароль ❤️");
+            } else if (counter < 6) {
+                alert("Ты глупи, пароль сзади карточки прочти 😛");
+            } else if (counter < 10) {
+                alert("Ты бяка 🤪");
+            } else {
+                alert("Ну давай, ломай кнопки 😡")
+            }
+        }
+    }
+
+    const canvas = document.getElementById('snow-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    window.addEventListener('resize', resize);
+    resize();
+
+    for(let i=0; i<100; i++) particles.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, r:Math.random()*3+1, s:Math.random()*1+0.5});
+    
+    function draw() {
+        ctx.clearRect(0,0,canvas.width, canvas.height);
+        ctx.fillStyle = "white";
+        particles.forEach(p => {
+            ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fill();
+            p.y += p.s; if(p.y > canvas.height) p.y = -10;
+        });
+        requestAnimationFrame(draw);
+    }
+    draw();
+</script>
+</body>
+</html>
